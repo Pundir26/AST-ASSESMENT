@@ -1,5 +1,12 @@
 pipeline {
     agent any 
+    environment {
+        REMOTE_HOST = '18.138.79.134'
+        REMOTE_USER = 'ubuntu'
+        SSH_CREDENTIALS_ID = 'APP'
+        WAR_FILE_PATH = 'target/app.war'
+        REMOTE_DESTINATION = '/home/ubuntu/apache-tomcat-9.0.85/webapps'
+    }
 
     stages {
         stage('CLONE') {
@@ -25,19 +32,20 @@ pipeline {
                 }
 
             }
-        } 
-        stage('DEPLOY') {
-          steps {
-             script {
-              try {
-                sh 'scp -i "/home/ubuntu/Saurabh1.pem" target/app.war ubuntu@18.138.79.134:/home/ubuntu/apache-tomcat-9.0.85/webapps'
-            } catch (Exception e) {
-                echo "Deployment failed: ${e.message}"
-                currentBuild.result = 'FAILURE'
+        }  
+        stages {
+        stage('Copy WAR File to EC2') {
+            steps {
+                script {
+                    sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                        sh """
+                            scp -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa ${WAR_FILE_PATH} ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DESTINATION}
+                        """
+                    }
+                }
             }
         }
-    }
-}
+       
     
     } 
 }
