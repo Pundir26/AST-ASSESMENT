@@ -26,10 +26,18 @@ pipeline {
 
             }
         } 
-         stage('DEPLOY') {
-            steps {
+        stage('DEPLOY') {
+          steps {
+             script {
+              try {
                 sh 'scp -i "/home/ubuntu/Saurabh1.pem" target/app.war ubuntu@18.138.79.134:/home/ubuntu/apache-tomcat-9.0.85/webapps'
-            }  
-        }     
+            } catch (Exception e) {
+                echo "Deployment failed: ${e.message}"
+                currentBuild.result = 'FAILURE'
+            }
+        }
+    }
+}
+    
     } 
 }
