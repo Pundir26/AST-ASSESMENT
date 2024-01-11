@@ -26,13 +26,10 @@ pipeline {
 
             }
         } 
-        stage('DEPLOY') {
+         stage('DEPLOY') {
             steps {
-                withCredentials([file(credentialsId: 'DEPLOY', variable: '')]) {
-                    scp target/app.war ubuntu@18.138.79.134:/home/ubuntu/apache-tomcat-9.0.85/webapps
-
-                }
+                sh 'scp -i "/home/ubuntu/Saurabh1.pem" target/app.war ubuntu@18.138.79.134:/home/ubuntu/apache-tomcat-9.0.85/webapps'
             }  
-        }   
+        }     
     } 
 }
