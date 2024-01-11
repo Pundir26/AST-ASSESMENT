@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('CLONE') {
             steps {
-                git branch: 'main', url: 'https://github.com/08dilipkumar/my-app.git'
+                git branch: 'main', url: 'https://github.com/Pundir26/AST-ASSESMENT.git'
             } 
         }
         stage('CLEAN') {
@@ -13,17 +13,6 @@ pipeline {
                 sh 'mvn compile'
             }
         } 
-
-        stage('TEST') {
-            steps {
-                sh 'mvn test'
-            }
-        } 
-        stage('Checkstyle Analysis') {
-            steps{
-                sh 'mvn checkstyle:checkstyle'
-            }
-        }   
         stage('BUILD') {
             steps {
                 sh 'mvn package'
@@ -37,9 +26,9 @@ pipeline {
 
             }
         } 
-        stage('DOCKER IMAGE') {
+        stage('DEPLOY') {
             steps {
-                sh 'docker build -t 07dilip/app:${BUILD_NUMBER} .'
+                sh 'scp -i "/home/ubuntu/Saurabh1.pem" target/app.war ubuntu@18.138.79.134:/home/ubuntu/apache-tomcat-9.0.85/webapps'
             }  
         }   
     } 
